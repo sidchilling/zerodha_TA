@@ -51,10 +51,10 @@ def spinning_tops(data, max_range_percent = 1, max_shadow_diff_percent = 70, bac
     index = index + 1
     if not _is_datapoint_ok(d): continue
     if not _is_date_spinning_top(d, max_range_percent, max_shadow_diff_percent): continue
-    next_five_days_data = data[index + 1 : index + 6]
+    prev_five_days_data = data[index - 5 : index]
     num_spinning_tops_found = 0
-    for next_d in next_five_days_data:
-      if _is_date_spinning_top(next_d, max_range_percent, max_shadow_diff_percent):
+    for prev_d in prev_five_days_data:
+      if _is_date_spinning_top(prev_d, max_range_percent, max_shadow_diff_percent):
         num_spinning_tops_found = num_spinning_tops_found + 1
     if num_spinning_tops_found > 2:
       # is there a trend

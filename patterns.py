@@ -69,7 +69,7 @@ def spinning_tops(data, max_range_percent = 1, max_shadow_diff_percent = 70, bac
         res.append(d) 
   return res
 
-def hammer_formation(data, max_range_percent = 1, max_upper_shadow_points = 2, shadow_body_ratio = 2, backlook_trend_days = 10, min_trend_percent = 5):
+def hammer(data, max_range_percent = 1, max_upper_shadow_points = 2, min_shadow_body_ratio = 2, backlook_trend_days = 10, min_trend_percent = 5):
   res = []
   index = -1
   for d in data:
@@ -82,7 +82,7 @@ def hammer_formation(data, max_range_percent = 1, max_upper_shadow_points = 2, s
     if upper_shadow_points > max_upper_shadow_points: continue
     range = abs(d.get('open') - d.get('close'))
     lower_shadow_range = min(d.get('open'), d.get('close')) - d.get('low')
-    if (range * shadow_body_ratio) > lower_shadow_range: continue
+    if (range * min_shadow_body_ratio) > lower_shadow_range: continue
     current_median_price = min(d.get('open'), d.get('close')) + (abs(d.get('open') - d.get('close')) / 2.0)
     prev_day_index = index - backlook_trend_days
     if prev_day_index < 0:
@@ -93,4 +93,29 @@ def hammer_formation(data, max_range_percent = 1, max_upper_shadow_points = 2, s
     trend_percent = (abs(current_median_price - prev_median_price) * 100) / prev_median_price
     if trend_percent < min_trend_percent: continue
     res.append(d)      
+  return res
+
+def hanging_man(data, max_range_percent = 1, max_upper_shadow_points = 2, min_shadow_body_ratio = 2, backlook_trend_days = 10, min_tend_percent = 5):
+  res = []
+  index = -1
+  for d in data:
+    index = index + 1
+    if not _is_datapoint_ok(d): continue
+    range_percent = (abs(d.get('open') - d.get('close')) * 100) / min(d.get('open'), d.get('close'))
+    if range_percent > max_range_percent: continue
+    upper_shadow_points = d.get('high') - max(d.get('open'), d.get('close'))
+    if upper_shadow_points > max_upper_shadow_points: continue
+    range = abs(d.get('open') - d.get('close'))
+    lower_shadow_range = min(d.get('open'), d.get('close')) - d.get('low')
+    if (range * min_shadow_body_ratio) > lower_shadow_range: continue
+    current_median_price = min(d.get('open'), d.get('close')) + (abs(d.get('open') - d.get('close')) / 2.0)
+    prev_day_index = index - backlook_trend_days
+    if prev_day_index < 0:
+      prev_day_index = 0
+    prev_d = data[prev_day_index]
+    prev_median_price = min(prev_d.get('open'), prev_d.get('close')) + (abs(prev_d.get('open') - prev_d.get('close')) / 2.0)
+    if prev_median_price > current_median_price: continue
+    trend_percent = (abs(current_median_price - prev_median_price) * 100) / prev_median_price
+    if trend_percent < min_tend_percent: continue
+    res.append(d)
   return res
